@@ -5,7 +5,11 @@ const webpack = require("webpack");
 module.exports = {
   mode: "development",
   entry: {
-    main: path.resolve(__dirname, "./src/javascript/index.js"),
+    main: path.resolve(
+      __dirname,
+      "regenerator-runtime/runtime.js",
+      "./src/javascript/index.js"
+    ),
   },
   devtool: "inline-source-map",
   devServer: {
