@@ -3,11 +3,21 @@
 import "../css/style.css";
 import "regenerator-runtime/runtime";
 import "core-js/stable";
+import { addDays, format } from "date-fns";
 
-const format = require("date-fns/format");
+let currentDay = new Date();
 
-let currentTime = new Date();
-console.log(currentTime);
+const weekDays = {
+  0: "today",
+  1: format(addDays(currentDay, 1), "EEEE"),
+  2: format(addDays(currentDay, 2), "EEEE"),
+  3: format(addDays(currentDay, 3), "EEEE"),
+  4: format(addDays(currentDay, 4), "EEEE"),
+  5: format(addDays(currentDay, 5), "EEEE"),
+  6: format(addDays(currentDay, 6), "EEEE"),
+  7: format(addDays(currentDay, 7), "EEEE"),
+  8: format(addDays(currentDay, 8), "EEEE"),
+};
 
 const units = [
   ["metric", "°C", "km", "m/s"],
@@ -196,7 +206,7 @@ async function getWeather(city) {
           const headerDiv = document.createElement("div");
           headerDiv.classList.add("snippet-header");
           const dayHeader = document.createElement("h1");
-          dayHeader.textContent = "friday";
+          dayHeader.textContent = weekDays[i];
           headerDiv.append(dayHeader);
 
           const dayDiv = document.createElement("div");
