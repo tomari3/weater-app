@@ -466,9 +466,6 @@ div.snippet_container > div:nth-child(2) {
     grid-template-columns: repeat(auto-fill, 1fr);
   }
 
-  .more-info_item {
-  }
-
   .more-info_item p {
     font-size: 2em;
   }

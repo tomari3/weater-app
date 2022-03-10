@@ -5,11 +5,8 @@ const webpack = require("webpack");
 module.exports = {
   mode: "development",
   entry: {
-    main: path.resolve(
-      __dirname,
-      "regenerator-runtime/runtime.js",
-      "./src/javascript/index.js"
-    ),
+    // babel: "./node_modules/babel-polyfill",
+    main: path.resolve(__dirname, "./src/javascript/index.js"),
   },
   devtool: "inline-source-map",
   devServer: {
@@ -17,7 +14,7 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.js$/, exclude: /node_modules/, use: ["babel-loader"] },
+      // { test: /\.js$/, exclude: /node_modules/, use: ["babel-loader"] },
       { test: /\.(?:ico|gif|png|jpg|jpeg)$/i, type: "asset/resource" },
       { test: /\.(woff(2)?|eot|ttf|otf|svg|)$/, type: "asset/inline" },
       {
