@@ -54,7 +54,7 @@ async function getWeather(city) {
     const pressureFormatted = `${pressure}mPh`;
     const dewPointFormatted = `${dew_point.toFixed(0)}${units[1]}`;
     const uviFormatted = uvi.toFixed(0);
-    const visibilityFormatted = `${visibility.toFixed(1) / 1000}${units[2]}`;
+    const visibilityFormatted = `${(visibility / 1000).toFixed(1)}${units[2]}`;
     const windSpeedFormatted = `${wind_speed.toFixed(1)}${units[3]}`;
 
     const currentDayList = [
@@ -170,6 +170,12 @@ async function getWeather(city) {
       // console.log(sevenDaysWeatherData.daily[i]);
       // console.log(uvi);
       (function render() {
+        const headerDiv = document.createElement("div");
+        headerDiv.classList.add("snippet-header");
+        const dayHeader = document.createElement("h1");
+        dayHeader.textContent = "friday";
+        headerDiv.append(dayHeader);
+
         const dayDiv = document.createElement("div");
         dayDiv.classList.add("snippet_container");
 
@@ -186,13 +192,13 @@ async function getWeather(city) {
 
         const windGust = document.createElement("span");
         windGust.classList.add("snippet_wind-gust");
-        windGust.textContent = `min: ${wind_gust.toFixed(0)}${units[3]}`;
+        windGust.textContent = `wind: ${wind_gust.toFixed(0)}${units[3]}`;
 
         const uviP = document.createElement("span");
         uviP.classList.add("snippet_uvi");
         uviP.textContent = `uvi: ${uvi.toFixed(0)}`;
 
-        const descriptionP = document.createElement("h1");
+        const descriptionP = document.createElement("h2");
         descriptionP.classList.add("snippet_description");
         descriptionP.textContent = description;
 
@@ -203,10 +209,20 @@ async function getWeather(city) {
         const text = document.createElement("div");
         text.classList.add("snippet_text");
         text.append(descriptionP, maxTemp, minTemp, feelsLike, windGust, uviP);
-        dayDiv.append(icon, text);
+        dayDiv.append(headerDiv, icon, text);
         futureSnippetCont.append(dayDiv);
       })();
     }
+  })();
+
+  (function futureWeather() {
+    const snippetCont = document.querySelectorAll(".snippet_container");
+
+    snippetCont.forEach((element) => {
+      element.addEventListener("click", (e) => {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
   })();
 }
 
@@ -219,4 +235,23 @@ searchSubmit.addEventListener("click", (e) => {
   e.preventDefault();
   const city = searchInput.value;
   getWeather(city);
+  searchInput.value = "";
+});
+
+let y = window.scrollY;
+const topHeader = document.querySelector(".top-header");
+const screen = document.querySelector(".screen");
+const topHeaderHeight = topHeader.offsetHeight;
+
+const addClassOnScroll = () => topHeader.classList.add("fade-out");
+const removeClassOnScroll = () => topHeader.classList.remove("fade-out");
+
+window.addEventListener("scroll", () => {
+  let scrollpos = window.scrollY;
+
+  if (scrollpos >= topHeaderHeight + 630) {
+    addClassOnScroll();
+  } else {
+    removeClassOnScroll();
+  }
 });
