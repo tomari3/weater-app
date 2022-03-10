@@ -4,6 +4,11 @@ import "../css/style.css";
 import "regenerator-runtime/runtime";
 import "core-js/stable";
 
+const format = require("date-fns/format");
+
+let currentTime = new Date();
+console.log(currentTime);
+
 const units = [
   ["metric", "°C", "km", "m/s"],
   ["imperial", "°F", "miles", "mph"],
@@ -19,7 +24,7 @@ const searchSubmit = document.querySelector(".header_city-search-submit");
 
 async function getWeather(city) {
   try {
-    const coordUrl = `//api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${APIKEY}&units=${units[ub][0]}`;
+    const coordUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${APIKEY}&units=${units[ub][0]}`;
     const [todayRes] = await Promise.all([fetch(coordUrl)]);
     const coordData = await todayRes.json();
     const {
@@ -28,7 +33,7 @@ async function getWeather(city) {
     } = coordData;
 
     const excluded = "none";
-    const sevenDaysWeatherUrl = `//api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=${excluded}&appid=${APIKEY}&units=${units[ub][0]}`;
+    const sevenDaysWeatherUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=${excluded}&appid=${APIKEY}&units=${units[ub][0]}`;
     const [sevenDaysRes] = await Promise.all([fetch(sevenDaysWeatherUrl)]);
     const sevenDaysWeatherData = await sevenDaysRes.json();
 
