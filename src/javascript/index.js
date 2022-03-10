@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import "../css/style.css";
 import "regenerator-runtime/runtime";
+import "core-js/stable";
 
 const units = [
   ["metric", "°C", "km", "m/s"],
