@@ -277,12 +277,13 @@ table {
   overflow-x: hidden;
   display: grid;
   grid-template-columns: 100vw;
-  grid-template-rows: 4fr 1fr;
+  grid-template-rows: clamp(50%, 30vw, 3fr) 1fr;
 }
 
 .current-day_current-weather {
   display: grid;
   grid-template-columns: 1fr 4fr;
+  padding: 0 10vw;
 }
 
 .general-weather_icon-temp {
@@ -319,14 +320,14 @@ table {
 }
 
 .current-day_more-info {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, min(150px));
   justify-content: space-between;
   align-items: center;
 }
 
 .more-info_item {
   flex: 1;
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -451,4 +452,28 @@ div.snippet_container > div:nth-child(2) {
 .footer {
   grid-area: footer;
   background-color: yellowgreen;
+}
+
+@media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) {
+  .screen {
+    grid-template-rows: 60px calc(100vh - 60px) 77vh 100px;
+  }
+
+  .current-day_more-info {
+    grid-template-columns: repeat(auto-fill, 1fr);
+  }
+  .current-day_more-info {
+    grid-template-columns: repeat(auto-fill, 1fr);
+  }
+
+  .more-info_item {
+  }
+
+  .more-info_item p {
+    font-size: 2em;
+  }
+
+  .general-weather_current-day {
+    grid-template-rows: 5fr 1fr;
+  }
 }
