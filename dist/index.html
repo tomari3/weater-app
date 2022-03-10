@@ -1,1 +1,57 @@
-<!doctype html><html lang="en"><head><title>The Weather</title><script defer="defer" src="main.bundle.js"></script></head><body><div id="root"></div></body></html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>The Weather</title>
+  <script defer src="main.bundle.js"></script></head>
+
+  <body>
+    <div id="root">
+      <div class="screen">
+        <header class="top-header">
+          <ul class="top-header_list">
+            <li class="list-item">
+              <h1>LOGO</h1>
+            </li>
+            <li class="list-item">
+              <form class="top-header_search-form" action="">
+                <label for="search-city">search city</label>
+                <input
+                  type="search"
+                  name="search-city"
+                  id="search-city"
+                  placeholder="Weather in your city"
+                />
+                <span class="search_under-line"></span>
+                <button class="header_city-search-submit" type="submit">
+                  search
+                </button>
+              </form>
+            </li>
+            <li class="list-item">
+              <ul class="top-header_icon-list">
+                <li class="icon-list_icon">ICON</li>
+                <li class="icon-list_icon">ICON</li>
+                <li class="icon-list_icon">ICON</li>
+              </ul>
+            </li>
+          </ul>
+        </header>
+        <main class="general-weather">
+          <section class="general-weather_current-day">
+            <section class="current-day_current-weather">
+              <div class="general-weather_icon-temp">
+                <div class="general-weather-icon">🌓</div>
+                <div class="general-weather-temp"></div>
+              </div>
+              <div class="general-weather-city"></div>
+            </section>
+            <section class="current-day_more-info"></section>
+          </section>
+          <section class="general-weather_future-weather-snippet"></section>
+        </main>
+        <section class="future-weather"></section>
+        <footer>ASD</footer>
+      </div>
+    </div>
+  </body>
+</html>
