@@ -1,11 +1,20 @@
+/* eslint-disable camelcase */
+/* eslint-disable no-unused-vars */
 import "../css/style.css";
 import "regenerator-runtime/runtime";
 
-const units = ["metric", "°C", "km", "m/s"];
+const units = [
+  ["metric", "°C", "km", "m/s"],
+  ["imperial", "°F", "miles", "mph"],
+];
+let lastCity = "london";
+// stands for Units Boolean
+let ub = 0;
+
 const APIKEY = "4f1a5f803edc74651cef27d64b2b6c51";
 
 async function getWeather(city) {
-  const coordUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${APIKEY}&units=${units[0]}`;
+  const coordUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${APIKEY}&units=${units[ub][0]}`;
   const [todayRes] = await Promise.all([fetch(coordUrl)]);
   const coordData = await todayRes.json();
   const {
@@ -14,7 +23,7 @@ async function getWeather(city) {
   } = coordData;
 
   const excluded = "none";
-  const sevenDaysWeatherUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=${excluded}&appid=${APIKEY}&units=${units[0]}`;
+  const sevenDaysWeatherUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=${excluded}&appid=${APIKEY}&units=${units[ub][0]}`;
   const [sevenDaysRes] = await Promise.all([fetch(sevenDaysWeatherUrl)]);
   const sevenDaysWeatherData = await sevenDaysRes.json();
 
@@ -52,10 +61,12 @@ async function getWeather(city) {
     const sunriseTime = returnTime(sunrise);
 
     const pressureFormatted = `${pressure}mPh`;
-    const dewPointFormatted = `${dew_point.toFixed(0)}${units[1]}`;
+    const dewPointFormatted = `${dew_point.toFixed(0)}${units[ub][1]}`;
     const uviFormatted = uvi.toFixed(0);
-    const visibilityFormatted = `${(visibility / 1000).toFixed(1)}${units[2]}`;
-    const windSpeedFormatted = `${wind_speed.toFixed(1)}${units[3]}`;
+    const visibilityFormatted = `${(visibility / 1000).toFixed(1)}${
+      units[ub][2]
+    }`;
+    const windSpeedFormatted = `${wind_speed.toFixed(1)}${units[ub][3]}`;
 
     const currentDayList = [
       sunriseTime,
@@ -74,11 +85,11 @@ async function getWeather(city) {
       const mainTempText = document.createElement("p");
       const mainFeelText = document.createElement("h1");
       mainFeelText.textContent = `feels like: ${feels_like.toFixed(0)}${
-        units[1]
+        units[ub][1]
       }, ${description}`;
       mainTempDisplay.textContent = "";
       mainTempDisplay.append(mainTempText, mainFeelText);
-      mainTempText.textContent = `${temp.toFixed(0)}${units[1]}`;
+      mainTempText.textContent = `${temp.toFixed(0)}${units[ub][1]}`;
 
       const getFontSize = (textLength) => {
         const baseSize = 24;
@@ -155,6 +166,7 @@ async function getWeather(city) {
 
       const dailyTemp = sevenDaysWeatherData.daily[i].temp;
 
+      // eslint-disable-next-line no-inner-declarations
       function returnTime(data) {
         const date = new Date(data * 1000);
         const currentHour = date.getHours();
@@ -164,11 +176,12 @@ async function getWeather(city) {
 
       const sunsetTime = returnTime(sunset);
       const sunriseTime = returnTime(sunrise);
-      const dewPointFormatted = `${dew_point.toFixed(0)}${units[1]}`;
+      const dewPointFormatted = `${dew_point.toFixed(0)}${units[ub][1]}`;
       const uviFormatted = uvi.toFixed(0);
-      const windSpeedFormatted = `${wind_speed.toFixed(1)}${units[3]}`;
+      const windSpeedFormatted = `${wind_speed.toFixed(1)}${units[ub][3]}`;
       // console.log(sevenDaysWeatherData.daily[i]);
       // console.log(uvi);
+      // eslint-disable-next-line no-loop-func
       (function render() {
         const headerDiv = document.createElement("div");
         headerDiv.classList.add("snippet-header");
@@ -184,15 +197,15 @@ async function getWeather(city) {
 
         const maxTemp = document.createElement("span");
         maxTemp.classList.add("snippet_max-temp");
-        maxTemp.textContent = `max: ${dailyTemp.max.toFixed(0)}${units[1]}`;
+        maxTemp.textContent = `max: ${dailyTemp.max.toFixed(0)}${units[ub][1]}`;
 
         const minTemp = document.createElement("span");
         minTemp.classList.add("snippet_min-temp");
-        minTemp.textContent = `min: ${dailyTemp.min.toFixed(0)}${units[1]}`;
+        minTemp.textContent = `min: ${dailyTemp.min.toFixed(0)}${units[ub][1]}`;
 
         const windGust = document.createElement("span");
         windGust.classList.add("snippet_wind-gust");
-        windGust.textContent = `wind: ${wind_gust.toFixed(0)}${units[3]}`;
+        windGust.textContent = `wind: ${wind_gust.toFixed(0)}${units[ub][3]}`;
 
         const uviP = document.createElement("span");
         uviP.classList.add("snippet_uvi");
@@ -204,7 +217,7 @@ async function getWeather(city) {
 
         const feelsLike = document.createElement("span");
         feelsLike.classList.add("snippet_feels-like");
-        feelsLike.textContent = `feels like: ${day.toFixed(0)}${units[1]}`;
+        feelsLike.textContent = `feels like: ${day.toFixed(0)}${units[ub][1]}`;
 
         const text = document.createElement("div");
         text.classList.add("snippet_text");
@@ -226,6 +239,17 @@ async function getWeather(city) {
   })();
 }
 
+const unitsBtn = document.querySelector(".icon-list_button");
+// eslint-disable-next-line prefer-destructuring
+unitsBtn.textContent = units[ub][1];
+unitsBtn.addEventListener("click", (e) => {
+  ub = 1 - ub;
+
+  // eslint-disable-next-line prefer-destructuring
+  unitsBtn.textContent = units[ub][1];
+  getWeather(lastCity);
+});
+
 getWeather("london");
 
 const searchInput = document.querySelector("#search-city");
@@ -234,24 +258,27 @@ const searchSubmit = document.querySelector(".header_city-search-submit");
 searchSubmit.addEventListener("click", (e) => {
   e.preventDefault();
   const city = searchInput.value;
+  lastCity = city;
   getWeather(city);
   searchInput.value = "";
 });
 
-let y = window.scrollY;
-const topHeader = document.querySelector(".top-header");
-const screen = document.querySelector(".screen");
-const topHeaderHeight = topHeader.offsetHeight;
+(function scrollHeader() {
+  const y = window.scrollY;
+  const topHeader = document.querySelector(".top-header");
+  const screen = document.querySelector(".screen");
+  const topHeaderHeight = topHeader.offsetHeight;
 
-const addClassOnScroll = () => topHeader.classList.add("fade-out");
-const removeClassOnScroll = () => topHeader.classList.remove("fade-out");
+  const addClassOnScroll = () => topHeader.classList.add("fade-out");
+  const removeClassOnScroll = () => topHeader.classList.remove("fade-out");
 
-window.addEventListener("scroll", () => {
-  let scrollpos = window.scrollY;
+  window.addEventListener("scroll", () => {
+    const scrollPos = window.scrollY;
 
-  if (scrollpos >= topHeaderHeight + 630) {
-    addClassOnScroll();
-  } else {
-    removeClassOnScroll();
-  }
-});
+    if (scrollPos >= topHeaderHeight + 630) {
+      addClassOnScroll();
+    } else {
+      removeClassOnScroll();
+    }
+  });
+})();

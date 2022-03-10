@@ -169,6 +169,13 @@ table {
   transition: all 0.2s ease-in-out;
 }
 
+.top-header h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.2rem;
+  color: var(--accent);
+  font-weight: 900;
+}
+
 .top-header.fade-out {
   opacity: 0;
 }
@@ -239,6 +246,17 @@ table {
 .top-header_icon-list {
   display: flex;
   justify-content: end;
+  align-items: center;
+  gap: 2vw;
+}
+.top-header_icon-list a {
+  color: var(--small-text);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.8em;
+}
+.icon-list_button {
+  font-weight: bold;
 }
 
 .list-item {
