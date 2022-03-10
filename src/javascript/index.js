@@ -1,11 +1,11 @@
 import "../css/style.css";
 import "regenerator-runtime/runtime";
 
-let units = "metric";
+const units = ["metric", "°C", "km", "m/s"];
 const APIKEY = "4f1a5f803edc74651cef27d64b2b6c51";
 
 async function getWeather(city) {
-  const coordUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${APIKEY}&units=${units}`;
+  const coordUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${APIKEY}&units=${units[0]}`;
   const [todayRes] = await Promise.all([fetch(coordUrl)]);
   const coordData = await todayRes.json();
   const {
@@ -14,7 +14,7 @@ async function getWeather(city) {
   } = coordData;
 
   const excluded = "none";
-  const sevenDaysWeatherUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=${excluded}&appid=${APIKEY}&units=${units}`;
+  const sevenDaysWeatherUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=${excluded}&appid=${APIKEY}&units=${units[0]}`;
   const [sevenDaysRes] = await Promise.all([fetch(sevenDaysWeatherUrl)]);
   const sevenDaysWeatherData = await sevenDaysRes.json();
 
@@ -52,15 +52,21 @@ async function getWeather(city) {
 
   console.log(sevenDaysWeatherData.daily);
 
+  const pressureFormatted = `${pressure}mPh`;
+  const dewPointFormatted = `${dew_point.toFixed(0)}${units[1]}`;
+  const uviFormatted = uvi.toFixed(0);
+  const visibilityFormatted = `${visibility / 1000}${units[2]}`;
+  const windSpeedFormatted = `${wind_speed.toFixed(1)}${units[3]}`;
+
   const currentDayList = [
     sunriseTime,
     sunsetTime,
-    pressure,
-    dew_point,
-    uvi,
+    pressureFormatted,
+    dewPointFormatted,
+    uviFormatted,
     clouds,
-    visibility,
-    wind_speed,
+    visibilityFormatted,
+    windSpeedFormatted,
     wind_deg,
   ];
 
@@ -68,10 +74,12 @@ async function getWeather(city) {
     const mainTempDisplay = document.querySelector(".general-weather-temp");
     const mainTempText = document.createElement("p");
     const mainFeelText = document.createElement("h1");
-    mainFeelText.textContent = `feels like: ${feels_like}, ${description}`;
+    mainFeelText.textContent = `feels like: ${feels_like.toFixed(0)}${
+      units[1]
+    }, ${description}`;
     mainTempDisplay.textContent = "";
     mainTempDisplay.append(mainTempText, mainFeelText);
-    mainTempText.textContent = `${temp.toFixed(0)}°C`;
+    mainTempText.textContent = `${temp.toFixed(0)}${units[1]}`;
 
     const getFontSize = (textLength) => {
       const baseSize = 24;
@@ -107,6 +115,12 @@ async function getWeather(city) {
         miniInfoWrapper.append(p, icon);
         miniInfoDiv.append(miniInfoWrapper);
       }
+      (function spinWindDirection() {
+        const compass = document.querySelector(
+          "div.more-info_item:nth-child(9) > div:nth-child(2)"
+        );
+        compass.style.transform = `rotate(${-45 + wind_deg}deg)`;
+      })();
     })();
   })();
 }

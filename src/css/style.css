@@ -193,7 +193,7 @@ table {
 
 .top-header_search-form input {
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   text-transform: capitalize;
   background-color: transparent;
   width: 200px;
@@ -269,9 +269,7 @@ table {
 }
 
 .general-weather-icon {
-  font-size: clamp(10rem, 20vw, 20rem);
-  line-height: 0px;
-  height: 0px;
+  content: url("../icons/cloud(1).svg");
 }
 .general-weather-temp p {
   font-size: clamp(0.7rem, 10vw, 10rem);
@@ -308,10 +306,43 @@ table {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 0.5vw;
 }
 
 .more-info_item p {
-  font-size: 2rem;
+  font-size: 1.4rem;
+}
+
+.more-info_item:nth-child(1) > div:nth-child(2) {
+  content: url("../icons/sunrise.svg");
+}
+.more-info_item:nth-child(2) > div:nth-child(2) {
+  content: url("../icons/sunset.svg");
+}
+.more-info_item:nth-child(3) > div:nth-child(2) {
+  content: url("../icons/minimize-2.svg");
+  transform: rotate(-45deg);
+}
+.more-info_item:nth-child(4) > div:nth-child(2) {
+  content: url("../icons/droplet.svg");
+}
+.more-info_item:nth-child(5) > div:nth-child(2) {
+  content: url("../icons/sun.svg");
+}
+.more-info_item:nth-child(6) > div:nth-child(2) {
+  content: url("../icons/cloud.svg");
+}
+.more-info_item:nth-child(6) {
+  display: none;
+}
+.more-info_item:nth-child(7) > div:nth-child(2) {
+  content: url("../icons/eye.svg");
+}
+.more-info_item:nth-child(8) > div:nth-child(2) {
+  content: url("../icons/wind.svg");
+}
+.more-info_item:nth-child(9) > div:nth-child(2) {
+  content: url("../icons/compass.svg");
 }
 
 .general-weather_future-weather-snippet {
