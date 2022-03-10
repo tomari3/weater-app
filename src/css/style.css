@@ -347,7 +347,41 @@ table {
 
 .general-weather_future-weather-snippet {
   grid-area: "future";
-  background-color: aqua;
+  background-color: var(--light);
+  color: var(--accent);
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: repeat(8, 1fr);
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0 5vw;
+  overflow: scroll;
+}
+div.snippet_container > div:nth-child(1) {
+  content: url("../icons/cloud-drizzle.svg");
+  align-self: flex-start;
+  padding-top: 5px;
+  padding-right: 15px;
+}
+.snippet_container {
+  display: flex;
+  width: 180px;
+}
+
+.snippet_text {
+  display: flex;
+  flex-direction: column;
+}
+
+.snippet_text h1 {
+  font-size: 1rem;
+  padding: 5px 0;
+}
+
+.snippet_text span {
+  padding: 3px 5px;
+  font-size: 1rem;
+  font-weight: 200;
 }
 
 .future-weather {
