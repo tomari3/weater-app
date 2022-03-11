@@ -132,6 +132,8 @@ async function renderWeather() {
         } = obj[i];
         weekDay = {
           clouds,
+          windDegree,
+          windGust,
           dewPoint: `${dewPoint.toFixed(0)}${units[ub][1]}`,
           dt: fromUnixTime(dt),
           humidity,
@@ -140,10 +142,8 @@ async function renderWeather() {
           moonset: format(fromUnixTime(moonset), "HH:MM"),
           sunrise: format(fromUnixTime(sunrise), "HH:MM"),
           sunset: format(fromUnixTime(sunset), "HH:MM"),
-          uvi: uvi.toFixed(0),
-          windDegree,
-          windGust,
           windSpeed: `${windSpeed.toFixed(1)}${units[ub][3]}`,
+          uvi: uvi.toFixed(0),
           day: day.toFixed(0) + units[ub][1],
           eve: eve.toFixed(0) + units[ub][1],
           morn: morn.toFixed(0) + units[ub][1],
@@ -235,9 +235,68 @@ async function renderWeather() {
     const futureSnippetCont = document.querySelector(
       ".general-weather_future-weather-snippet"
     );
+    for (let i = 0; i < 8; i += 1) {
+      const renderList = {
+        description: {
+          prefix: "",
+          value: futureData[i].description,
+          class: "description",
+        },
+        windSpeed: {
+          prefix: "wind speed:",
+          value: futureData[i].windSpeed,
+          class: "text",
+        },
+        humidity: {
+          prefix: "humidity:",
+          value: futureData[i].humidity,
+          class: "text",
+        },
+        min: {
+          prefix: "min temp:",
+          value: futureData[i].min,
+          class: "text",
+        },
+        day: {
+          prefix: "day temp:",
+          value: futureData[i].day,
+          class: "text",
+        },
+        max: {
+          prefix: "max temp:",
+          value: futureData[i].max,
+          class: "text",
+        },
+        dayFeel: {
+          prefix: "feels like:",
+          value: futureData[i].dayFeel,
+          class: "text",
+        },
+      };
+      const headerDiv = document.createElement("div");
+      headerDiv.classList.add("snippet-header");
+      const dayHeader = document.createElement("h1");
+      dayHeader.textContent = weekDays[i];
+      headerDiv.append(dayHeader);
+      const dayDiv = document.createElement("div");
+      dayDiv.classList.add("snippet_container");
+      const text = document.createElement("div");
+      text.classList.add("snippet_text");
+      const icon = document.createElement("div");
+      icon.classList.add("snippet_icon");
+      for (const [key, value] of Object.entries(renderList)) {
+        const a = document.createElement("p");
+        a.classList.add(`snippet_${value.class}`);
+        a.textContent = `${value.prefix} ${value.value}`;
+        text.append(a);
+      }
+      dayDiv.append(headerDiv, icon, text);
+      futureSnippetCont.append(dayDiv);
+    }
   }
 
   renderMain();
+  renderSnippet();
 }
 
 renderWeather();
