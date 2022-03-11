@@ -4,20 +4,7 @@ import "../css/style.css";
 import "regenerator-runtime/runtime";
 import "core-js/stable";
 import { addDays, format, fromUnixTime } from "date-fns";
-
-const currentDay = new Date();
-
-const weekDays = {
-  0: "today",
-  1: format(addDays(currentDay, 1), "EEEE"),
-  2: format(addDays(currentDay, 2), "EEEE"),
-  3: format(addDays(currentDay, 3), "EEEE"),
-  4: format(addDays(currentDay, 4), "EEEE"),
-  5: format(addDays(currentDay, 5), "EEEE"),
-  6: format(addDays(currentDay, 6), "EEEE"),
-  7: format(addDays(currentDay, 7), "EEEE"),
-  8: format(addDays(currentDay, 8), "EEEE"),
-};
+import Chart from "chart.js/auto";
 
 const units = [
   ["metric", "°C", "km", "m/s"],
@@ -47,7 +34,7 @@ async function getWeather(city) {
     const [sevenDaysRes] = await Promise.all([fetch(sevenDaysWeatherUrl)]);
     const sevenDaysWeatherData = await sevenDaysRes.json();
 
-    return sevenDaysWeatherData;
+    return [sevenDaysWeatherData, name];
   } catch (e) {
     if (e instanceof TypeError) {
       searchInput.placeholder = "Not a valid input";
@@ -57,6 +44,20 @@ async function getWeather(city) {
 }
 
 async function renderWeather() {
+  const currentDay = new Date();
+
+  const weekDays = {
+    0: "today",
+    1: format(addDays(currentDay, 1), "EEEE"),
+    2: format(addDays(currentDay, 2), "EEEE"),
+    3: format(addDays(currentDay, 3), "EEEE"),
+    4: format(addDays(currentDay, 4), "EEEE"),
+    5: format(addDays(currentDay, 5), "EEEE"),
+    6: format(addDays(currentDay, 6), "EEEE"),
+    7: format(addDays(currentDay, 7), "EEEE"),
+    8: format(addDays(currentDay, 8), "EEEE"),
+  };
+
   async function formatData() {
     function formatToday({
       timezone,
@@ -80,7 +81,7 @@ async function renderWeather() {
       },
     }) {
       return {
-        timezone: timezone.split("/")[1],
+        timezone,
         timezoneOffset,
         dt,
         main,
@@ -162,23 +163,68 @@ async function renderWeather() {
       return futureData;
     }
 
-    const sevenDaysData = await getWeather(lastCity);
+    function formatHourly(obj) {
+      const hourlyData = [];
+      for (let i = 0; i < obj.length; i += 1) {
+        let hourly = {};
+        const {
+          clouds,
+          dt,
+          humidity,
+          uvi,
+          temp,
+          dew_point: dewPoint,
+          wind_deg: windDegree,
+          wind_gust: windGust,
+          wind_speed: windSpeed,
+          feels_like: feelsLike,
+          weather: {
+            0: { main, description },
+          },
+        } = obj[i];
+        hourly = {
+          clouds,
+          windDegree,
+          windGust,
+          humidity,
+          dewPoint: `${dewPoint.toFixed(0)}${units[ub][1]}`,
+          dt: format(fromUnixTime(dt), "HH:MM"),
+          windSpeed: `${windSpeed.toFixed(1)}${units[ub][3]}`,
+          uvi: uvi.toFixed(0),
+          temp: temp.toFixed(0) + units[ub][1],
+          feelsLike: feelsLike.toFixed(0) + units[ub][1],
+          main,
+          description,
+        };
+        hourlyData.push(hourly);
+      }
+      return hourlyData;
+    }
+
+    const metaData = await getWeather(lastCity);
+    const cityName = metaData[1];
+    const sevenDaysData = metaData[0];
     const todaysData = formatToday(sevenDaysData);
     const futureData = formatFuture(sevenDaysData.daily);
+    const hourlyData = formatHourly(sevenDaysData.hourly);
 
-    return [todaysData, futureData];
+    console.log(hourlyData);
+
+    return [todaysData, futureData, hourlyData, cityName];
   }
   const data = await formatData();
   const todaysData = data[0];
   const futureData = data[1];
+  const hourlyData = data[2];
+  const cityName = data[3];
 
   function renderMain() {
     const mainTempDisplay = document.querySelector(".general-weather-temp");
     const mainTempText = document.createElement("p");
     const mainFeelText = document.createElement("h1");
 
-    mainFeelText.textContent = `feels like: ${todaysData.feelsLike}, ${todaysData.description}`;
     mainTempDisplay.textContent = "";
+    mainFeelText.textContent = `feels like: ${todaysData.feelsLike}, ${todaysData.description}`;
     mainTempDisplay.append(mainTempText, mainFeelText);
     mainTempText.textContent = `${todaysData.temp}`;
 
@@ -195,7 +241,7 @@ async function renderWeather() {
     const mainCityDisplay = document.querySelector(".general-weather-city");
     const mainCityText = document.createElement("h1");
     mainCityDisplay.textContent = "";
-    mainCityText.textContent = todaysData.timezone;
+    mainCityText.textContent = cityName;
     mainCityText.style.fontSize = getFontSize(mainCityText.textContent.length);
 
     if (mainCityText.textContent.length > 8) {
@@ -205,6 +251,7 @@ async function renderWeather() {
     mainCityDisplay.append(mainCityText);
 
     const miniInfoDiv = document.querySelector(".current-day_more-info");
+    miniInfoDiv.textContent = "";
     const miniInfo = [
       todaysData.sunrise,
       todaysData.sunset,
@@ -235,42 +282,51 @@ async function renderWeather() {
     const futureSnippetCont = document.querySelector(
       ".general-weather_future-weather-snippet"
     );
+    futureSnippetCont.textContent = "";
+
     for (let i = 0; i < 8; i += 1) {
       const renderList = {
         description: {
           prefix: "",
           value: futureData[i].description,
           class: "description",
+          appendix: "",
         },
         windSpeed: {
           prefix: "wind speed:",
           value: futureData[i].windSpeed,
           class: "text",
+          appendix: "",
         },
         humidity: {
           prefix: "humidity:",
           value: futureData[i].humidity,
           class: "text",
-        },
-        min: {
-          prefix: "min temp:",
-          value: futureData[i].min,
-          class: "text",
+          appendix: "%",
         },
         day: {
-          prefix: "day temp:",
+          prefix: "day:",
           value: futureData[i].day,
           class: "text",
+          appendix: "",
+        },
+        min: {
+          prefix: "min:",
+          value: futureData[i].min,
+          class: "text",
+          appendix: "",
         },
         max: {
-          prefix: "max temp:",
+          prefix: "max:",
           value: futureData[i].max,
           class: "text",
+          appendix: "",
         },
         dayFeel: {
           prefix: "feels like:",
           value: futureData[i].dayFeel,
           class: "text",
+          appendix: "",
         },
       };
       const headerDiv = document.createElement("div");
@@ -284,10 +340,11 @@ async function renderWeather() {
       text.classList.add("snippet_text");
       const icon = document.createElement("div");
       icon.classList.add("snippet_icon");
+      // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of Object.entries(renderList)) {
         const a = document.createElement("p");
         a.classList.add(`snippet_${value.class}`);
-        a.textContent = `${value.prefix} ${value.value}`;
+        a.textContent = `${value.prefix} ${value.value}${value.appendix}`;
         text.append(a);
       }
       dayDiv.append(headerDiv, icon, text);
@@ -295,8 +352,44 @@ async function renderWeather() {
     }
   }
 
+  // function renderFuture() {
+  //   const shownDay = futureData[0];
+
+  //   const ctx = document.getElementById("myChart").getContext("2d");
+  //   const myChart = new Chart(ctx, {
+  //     type: "bar",
+  //     data: {
+  //       labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+  //       datasets: [
+  //         {
+  //           label: "# of Votes",
+  //           data: [12, 19, 3, 5, 2, 3],
+  //           backgroundColor: [
+  //             "rgba(255, 99, 132, 0.2)",
+  //             "rgba(54, 162, 235, 0.2)",
+  //             "rgba(255, 206, 86, 0.2)",
+  //             "rgba(75, 192, 192, 0.2)",
+  //             "rgba(153, 102, 255, 0.2)",
+  //             "rgba(255, 159, 64, 0.2)",
+  //           ],
+  //           borderColor: [
+  //             "rgba(255, 99, 132, 1)",
+  //             "rgba(54, 162, 235, 1)",
+  //             "rgba(255, 206, 86, 1)",
+  //             "rgba(75, 192, 192, 1)",
+  //             "rgba(153, 102, 255, 1)",
+  //             "rgba(255, 159, 64, 1)",
+  //           ],
+  //           borderWidth: 1,
+  //         },
+  //       ],
+  //     },
+  //   });
+  // }
+
   renderMain();
   renderSnippet();
+  // renderFuture();
 }
 
 renderWeather();
@@ -305,7 +398,7 @@ searchSubmit.addEventListener("click", (e) => {
   e.preventDefault();
   const city = searchInput.value;
   lastCity = city;
-  getWeather(city);
+  renderWeather(city);
   searchInput.value = "";
 });
 const unitsBtn = document.querySelector(".icon-list_button");
