@@ -58,7 +58,7 @@ async function getWeather(city) {
 
 async function renderWeather() {
   async function formatData() {
-    function destructToday({
+    function formatToday({
       timezone,
       timezone_offset: timezoneOffset,
       current: {
@@ -80,53 +80,97 @@ async function renderWeather() {
       },
     }) {
       return {
-        timezone,
+        timezone: timezone.split("/")[1],
         timezoneOffset,
         dt,
-        sunrise,
-        sunset,
-        temp,
-        feelsLike,
-        pressure,
-        dewPoint,
-        uvi,
-        clouds,
-        visibility,
-        windSpeed,
-        windDegree,
         main,
         description,
+        clouds,
+        windDegree,
+
+        temp: temp.toFixed(0) + units[ub][1],
+        feelsLike: feelsLike.toFixed(0) + units[ub][1],
+
+        sunrise: format(fromUnixTime(sunrise), "HH:MM"),
+        sunset: format(fromUnixTime(sunset), "HH:MM"),
+        dewPoint: `${dewPoint.toFixed(0)}${units[ub][1]}`,
+        pressure: `${pressure}mPh`,
+        uvi: uvi.toFixed(0),
+        visibility: `${(visibility / 1000).toFixed(1)}${units[ub][2]}`,
+        windSpeed: `${windSpeed.toFixed(1)}${units[ub][3]}`,
       };
     }
-    function formatToday(obj) {
-      return {
-        timezone: obj.timezone.split("/")[1],
-        timezoneOffset: obj.timezoneOffset,
-        dt: obj.dt,
-        main: obj.main,
-        description: obj.description,
-        clouds: obj.clouds,
-        windDegree: obj.windDegree,
 
-        temp: obj.temp.toFixed(0) + units[ub][1],
-        feelsLike: obj.feelsLike.toFixed(0) + units[ub][1],
-
-        sunrise: format(fromUnixTime(obj.sunrise), "HH:MM"),
-        sunset: format(fromUnixTime(obj.sunset), "HH:MM"),
-        dewPoint: `${obj.dewPoint.toFixed(0)}${units[ub][1]}`,
-        pressure: `${obj.pressure}mPh`,
-        uvi: obj.uvi.toFixed(0),
-        visibility: `${(obj.visibility / 1000).toFixed(1)}${units[ub][2]}`,
-        windSpeed: `${obj.windSpeed.toFixed(1)}${units[ub][3]}`,
-      };
+    function formatFuture(obj) {
+      const futureData = [];
+      for (let i = 0; i < obj.length; i += 1) {
+        let weekDay = {};
+        const {
+          clouds,
+          dt,
+          humidity,
+          moonrise,
+          moonset,
+          sunrise,
+          sunset,
+          uvi,
+          dew_point: dewPoint,
+          moon_phase: moonPhase,
+          wind_deg: windDegree,
+          wind_gust: windGust,
+          wind_speed: windSpeed,
+          feels_like: {
+            day: dayFeel,
+            eve: eveFeel,
+            morn: mornFeel,
+            night: nightFeel,
+          },
+          temp: { day, eve, morn, night, min, max },
+          weather: {
+            0: { main, description },
+          },
+        } = obj[i];
+        weekDay = {
+          clouds,
+          dewPoint: `${dewPoint.toFixed(0)}${units[ub][1]}`,
+          dt: fromUnixTime(dt),
+          humidity,
+          moonPhase: format(fromUnixTime(moonPhase), "HH:MM"),
+          moonrise: format(fromUnixTime(moonrise), "HH:MM"),
+          moonset: format(fromUnixTime(moonset), "HH:MM"),
+          sunrise: format(fromUnixTime(sunrise), "HH:MM"),
+          sunset: format(fromUnixTime(sunset), "HH:MM"),
+          uvi: uvi.toFixed(0),
+          windDegree,
+          windGust,
+          windSpeed: `${windSpeed.toFixed(1)}${units[ub][3]}`,
+          day: day.toFixed(0) + units[ub][1],
+          eve: eve.toFixed(0) + units[ub][1],
+          morn: morn.toFixed(0) + units[ub][1],
+          night: night.toFixed(0) + units[ub][1],
+          min: min.toFixed(0) + units[ub][1],
+          max: max.toFixed(0) + units[ub][1],
+          dayFeel: dayFeel.toFixed(0) + units[ub][1],
+          eveFeel: eveFeel.toFixed(0) + units[ub][1],
+          mornFeel: mornFeel.toFixed(0) + units[ub][1],
+          nightFeel: nightFeel.toFixed(0) + units[ub][1],
+          main,
+          description,
+        };
+        futureData.push(weekDay);
+      }
+      return futureData;
     }
 
     const sevenDaysData = await getWeather(lastCity);
-    const todaysData = destructToday(sevenDaysData);
-    const todayDataFormatted = formatToday(todaysData);
-    return todayDataFormatted;
+    const todaysData = formatToday(sevenDaysData);
+    const futureData = formatFuture(sevenDaysData.daily);
+
+    return [todaysData, futureData];
   }
-  const todaysData = await formatData();
+  const data = await formatData();
+  const todaysData = data[0];
+  const futureData = data[1];
 
   function renderMain() {
     const mainTempDisplay = document.querySelector(".general-weather-temp");
