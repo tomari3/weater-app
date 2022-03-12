@@ -133,7 +133,7 @@ table {
 
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800;900&family=Work+Sans:wght@200;400;700;900&display=swap");
 :root {
-  --bg: #5085a5;
+  --bg: rgb(80, 133, 165);
   --accent: #697865;
   --lighter: #8fc1e2;
   --darker: #31708f;
@@ -480,16 +480,32 @@ div.snippet_container > div:nth-child(2) {
 .charts {
   position: relative;
   margin: auto;
-  height: 80vh;
-  width: 80vw;
+  height: 50vh;
+  width: 75vw;
 }
-
+/* 
 #myChart {
-}
+} */
 
 .footer {
   grid-area: footer;
-  background-color: yellowgreen;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer_list {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4vw;
+}
+
+.footer_list a {
+  color: var(--text);
+  text-decoration: none;
 }
 
 @media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) {

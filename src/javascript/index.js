@@ -371,7 +371,8 @@ async function renderWeather() {
       labels: time,
       datasets: [
         {
-          label: false,
+          label: true,
+          color: "white",
           data: temps,
           fill: false,
           borderColor: "white",
@@ -381,16 +382,42 @@ async function renderWeather() {
       ],
     };
     const options = {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        title: {
+          display: false,
+        },
+        tooltip: {
+          mode: "index",
+          intersect: false,
+        },
+      },
+      hover: {
+        mode: "index",
+        intersect: false,
+      },
       maintainAspectRatio: false,
       scales: {
         y: {
+          grace: "10%",
+          ticks: {
+            color: "white",
+            stepSize: 1,
+          },
           stacked: true,
           grid: {
             display: true,
-            color: "rgba(255,99,132,0.2)",
+            color: "rgba(255,255,255, .2)",
           },
         },
         x: {
+          ticks: {
+            color: "white",
+            stepSize: 3,
+          },
           grid: {
             display: false,
           },
