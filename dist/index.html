@@ -35,7 +35,10 @@
             </li>
             <li class="list-item">
               <ul class="top-header_icon-list">
-                <li class="icon-list_button"><button></button></li>
+                <li class="icon-list_toggle">MODE</li>
+                <li class="icon-list_button">
+                  <button class="units-btn"></button>
+                </li>
                 <li class="icon-list_icon">
                   <a href="https://github.com/tomari3/weather-app"
                     ><svg
@@ -73,8 +76,34 @@
           </section>
           <section class="general-weather_future-weather-snippet"></section>
         </main>
-        <section class="future-weather"></section>
-        <footer>ASD</footer>
+        <section class="future-weather">
+          <div class="charts">
+            <canvas id="myChart"></canvas>
+          </div>
+        </section>
+        <footer>
+          <ul class="footer_list">
+            <li class="footer_list-item">
+              <a
+                href="https://github.com/tomari3/weather-app"
+                class="footer_link"
+                >github</a
+              >
+            </li>
+            <li class="footer_list-item">
+              <a
+                href="https://www.theodinproject.com/paths/full-stack-javascript/courses/javascript/lessons/weather-app"
+                class="footer_link"
+                >the odin project</a
+              >
+            </li>
+            <li class="footer_list-item">
+              <a href="https://www.chartjs.org/docs/latest/" class="footer_link"
+                >charts.js</a
+              >
+            </li>
+          </ul>
+        </footer>
       </div>
     </div>
   </body>
