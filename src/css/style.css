@@ -132,14 +132,45 @@ table {
 /* CODE */
 
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800;900&family=Work+Sans:wght@200;400;700;900&display=swap");
-:root {
+body {
   --bg: rgb(80, 133, 165);
   --accent: #697865;
-  --lighter: #8fc1e2;
+  --bg2: #697865;
   --darker: #31708f;
   --light: #f8f9fb;
   --text: white;
   --small-text: black;
+}
+
+body.dark-theme {
+  --bg: rgb(6, 28, 42);
+  --accent: #76ad62;
+  --bg2: #2e2e2e;
+  --darker: #1a4962;
+  --light: #000000;
+  --text: rgb(255, 255, 255);
+  --small-text: rgb(255, 255, 255);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --bg: rgb(0, 0, 0);
+    --accent: #697865;
+    --bg2: #8fc1e2;
+    --darker: #31708f;
+    --light: #f8f9fb;
+    --text: white;
+    --small-text: black;
+  }
+  body.dark-theme {
+    --bg: rgb(6, 28, 42);
+    --accent: #76ad62;
+    --bg2: #2e2e2e;
+    --darker: #1a4962;
+    --light: #000000;
+    --text: rgb(255, 255, 255);
+    --small-text: rgb(255, 255, 255);
+  }
 }
 
 .body {
@@ -210,6 +241,7 @@ table {
 }
 
 .top-header_search-form input {
+  color: var(--small-text);
   font-weight: 600;
   font-size: 0.8rem;
   text-transform: capitalize;
@@ -473,7 +505,7 @@ div.snippet_container > div:nth-child(2) {
 
 .future-weather {
   grid-area: future-weather;
-  background-color: var(--accent);
+  background-color: var(--bg2);
   display: flex;
 }
 

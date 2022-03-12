@@ -456,6 +456,19 @@ unitsBtn.addEventListener("click", (e) => {
   renderWeather(lastCity);
 });
 
+const toggleColor = document.querySelector(".icon-list_toggle");
+const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+toggleColor.addEventListener("click", (e) => {
+  if (prefersDarkScheme.matches) {
+    // ...then apply the .light-theme class to override those styles
+    document.body.classList.toggle("light-theme");
+    // Otherwise...
+  } else {
+    // ...apply the .dark-theme class to override the default light styles
+    document.body.classList.toggle("dark-theme");
+  }
+});
+
 getWeather("london");
 
 (function scrollHeader() {
