@@ -19,7 +19,6 @@ const searchSubmit = document.querySelector(".header_city-search-submit");
 
 async function getWeather(city) {
   const APIKEY = "4f1a5f803edc74651cef27d64b2b6c51";
-
   try {
     const coordUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&APPID=${APIKEY}&units=${units[ub][0]}`;
     const [todayRes] = await Promise.all([fetch(coordUrl)]);
@@ -191,8 +190,8 @@ async function renderWeather() {
           dt: format(fromUnixTime(dt), "HH:MM"),
           windSpeed: `${windSpeed.toFixed(1)}${units[ub][3]}`,
           uvi: uvi.toFixed(0),
-          temp: temp.toFixed(0) + units[ub][1],
-          feelsLike: feelsLike.toFixed(0) + units[ub][1],
+          temp: temp.toFixed(0),
+          feelsLike: feelsLike.toFixed(0),
           main,
           description,
         };
@@ -207,8 +206,6 @@ async function renderWeather() {
     const todaysData = formatToday(sevenDaysData);
     const futureData = formatFuture(sevenDaysData.daily);
     const hourlyData = formatHourly(sevenDaysData.hourly);
-
-    console.log(hourlyData);
 
     return [todaysData, futureData, hourlyData, cityName];
   }
@@ -269,11 +266,11 @@ async function renderWeather() {
       const icon = document.createElement("div");
       const p = document.createElement("p");
       p.textContent = element;
-      miniInfoWrapper.append(p, icon);
+      miniInfoWrapper.append(icon, p);
       miniInfoDiv.append(miniInfoWrapper);
     });
     const compass = document.querySelector(
-      "div.more-info_item:nth-child(9) > div:nth-child(2)"
+      "div.more-info_item:nth-child(9) > div:nth-child(1)"
     );
     compass.style.transform = `rotate(${-45 + todaysData.windDegree}deg)`;
   }
@@ -352,44 +349,64 @@ async function renderWeather() {
     }
   }
 
-  // function renderFuture() {
-  //   const shownDay = futureData[0];
+  function renderFuture() {
+    function getTemp() {
+      const shownDay = futureData[0];
+      const temp = [];
+      hourlyData.forEach((hour) => temp.push(hour.temp));
+      return temp;
+    }
+    function getTime() {
+      const shownDay = futureData[0];
+      const time = [];
+      hourlyData.forEach((hour) => time.push(hour.dt));
+      return time;
+    }
 
-  //   const ctx = document.getElementById("myChart").getContext("2d");
-  //   const myChart = new Chart(ctx, {
-  //     type: "bar",
-  //     data: {
-  //       labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-  //       datasets: [
-  //         {
-  //           label: "# of Votes",
-  //           data: [12, 19, 3, 5, 2, 3],
-  //           backgroundColor: [
-  //             "rgba(255, 99, 132, 0.2)",
-  //             "rgba(54, 162, 235, 0.2)",
-  //             "rgba(255, 206, 86, 0.2)",
-  //             "rgba(75, 192, 192, 0.2)",
-  //             "rgba(153, 102, 255, 0.2)",
-  //             "rgba(255, 159, 64, 0.2)",
-  //           ],
-  //           borderColor: [
-  //             "rgba(255, 99, 132, 1)",
-  //             "rgba(54, 162, 235, 1)",
-  //             "rgba(255, 206, 86, 1)",
-  //             "rgba(75, 192, 192, 1)",
-  //             "rgba(153, 102, 255, 1)",
-  //             "rgba(255, 159, 64, 1)",
-  //           ],
-  //           borderWidth: 1,
-  //         },
-  //       ],
-  //     },
-  //   });
-  // }
+    const temps = getTemp();
+    const time = getTime();
+
+    const ctx = document.getElementById("myChart").getContext("2d");
+    const chartData = {
+      labels: time,
+      datasets: [
+        {
+          label: false,
+          data: temps,
+          fill: false,
+          borderColor: "white",
+          tension: 0.5,
+          pointRadius: 1,
+        },
+      ],
+    };
+    const options = {
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          stacked: true,
+          grid: {
+            display: true,
+            color: "rgba(255,99,132,0.2)",
+          },
+        },
+        x: {
+          grid: {
+            display: false,
+          },
+        },
+      },
+    };
+    const myChart = new Chart(ctx, {
+      type: "line",
+      data: chartData,
+      options,
+    });
+  }
 
   renderMain();
   renderSnippet();
-  // renderFuture();
+  renderFuture();
 }
 
 renderWeather();
@@ -401,7 +418,7 @@ searchSubmit.addEventListener("click", (e) => {
   renderWeather(city);
   searchInput.value = "";
 });
-const unitsBtn = document.querySelector(".icon-list_button");
+const unitsBtn = document.querySelector(".units-btn");
 // eslint-disable-next-line prefer-destructuring
 unitsBtn.textContent = units[ub][1];
 unitsBtn.addEventListener("click", (e) => {
@@ -409,7 +426,7 @@ unitsBtn.addEventListener("click", (e) => {
 
   // eslint-disable-next-line prefer-destructuring
   unitsBtn.textContent = units[ub][1];
-  getWeather(lastCity);
+  renderWeather(lastCity);
 });
 
 getWeather("london");
@@ -426,7 +443,7 @@ getWeather("london");
   window.addEventListener("scroll", () => {
     const scrollPos = window.scrollY;
 
-    if (scrollPos >= topHeaderHeight + 630) {
+    if (scrollPos >= topHeaderHeight + 100) {
       addClassOnScroll();
     } else {
       removeClassOnScroll();
